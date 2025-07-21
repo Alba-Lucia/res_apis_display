@@ -3,51 +3,24 @@ import ProductCreateForm from "../models/ProductCreateForm.model";
 import ProductList from "../models/ProductList.model";
 import { literal } from "sequelize";
 
-
 export const getAllItems = async (req: Request, res: Response) => {
   try {
     const items = await ProductList.findAll({
-      include: [ProductCreateForm],
+      include: [{ model: ProductCreateForm, as: "product" }],
       order: [["created_at", "DESC"]],
     });
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    console.log("items result:", JSON.stringify(items, null, 2)); // log temporal
 
-    const itemsWithExpiredDays = items.map((item: any) => {
-      const expirationDate = new Date(item.ProductCreateForm.expirationDate);
-      expirationDate.setHours(0, 0, 0, 0);
-
-      const diffTime = today.getTime() - expirationDate.getTime();
-      const expiredDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-      return {
-        ...item.toJSON(),
-        expiredDays: expiredDays > 0 ? expiredDays : 0,
-      };
-    });
-
-    res.json(itemsWithExpiredDays);
-  } catch (error) {
-    console.error("Error fetching product list:", error);
-    res.status(500).json({ error: "Error fetching product list" });
-  }
-};
-
-
-/*
-export const getAllItems = async (req: Request, res: Response) => {
-  try {
-    const items = await ProductList.findAll({
-      include: [ProductCreateForm],
-      order: [["created_at", "DESC"]],
-    });
     res.json(items);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching product list" });
+  } catch (error: any) {
+    console.error("Error en getAllItems:", error);
+    res
+      .status(500)
+      .json({ error: error.message || "Error fetching product list" });
   }
 };
-*/
+
 export const addItem = async (req: Request, res: Response) => {
   try {
     const { productId, quantity } = req.body;
@@ -99,9 +72,10 @@ export const addItem = async (req: Request, res: Response) => {
 // };
 // Actualizar producto
 
-
-
-export const updateItem = async (req: Request, res: Response): Promise<void> => {
+export const updateItem = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     const { productId, quantity, createdAt, updatedAt } = req.body;
@@ -121,21 +95,29 @@ export const updateItem = async (req: Request, res: Response): Promise<void> => 
       }
     }
 
-    const fieldsToUpdate: any = {};
+    // Preparar campos a actualizar
+    const fieldsToUpdate: any = {
+      productId,
+      quantity,
+    };
 
-    if (productId !== undefined) fieldsToUpdate.productId = productId;
-    if (quantity !== undefined) fieldsToUpdate.quantity = quantity;
-
+    // Forzar fecha si es válida
     if (createdAt && !isNaN(Date.parse(createdAt))) {
-      fieldsToUpdate.created_at = literal(`'${new Date(createdAt).toISOString()}'`);
+      fieldsToUpdate.createdAt = literal(
+        `'${new Date(createdAt).toISOString()}'`
+      );
     }
 
     if (updatedAt && !isNaN(Date.parse(updatedAt))) {
-      fieldsToUpdate.updated_at = literal(`'${new Date(updatedAt).toISOString()}'`);
+      fieldsToUpdate.updatedAt = literal(
+        `'${new Date(updatedAt).toISOString()}'`
+      );
     }
 
+    // Ejecutar actualización directa
     await ProductList.update(fieldsToUpdate, { where: { id } });
 
+    // Recargar producto actualizado
     const updatedProduct = await ProductList.findByPk(id, {
       include: [ProductCreateForm],
     });
@@ -146,8 +128,6 @@ export const updateItem = async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
-
-
 
 export const deleteItem = async (req: Request, res: Response) => {
   try {
