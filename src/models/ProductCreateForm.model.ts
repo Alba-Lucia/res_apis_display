@@ -16,12 +16,6 @@ class ProductCreateForm extends Model<ProductCreateForm> {
   })
   quantity?: number;
 
-  // @Column({
-  //   type: DataType.STRING,
-  //   allowNull: true, // ← Ahora opcional
-  // })
-  // idProductList?: string;
-
   @Column({
     type: DataType.STRING,
     allowNull: true, // ← Ahora opcional
