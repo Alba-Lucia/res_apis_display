@@ -17,7 +17,9 @@ export const createProduct = async (req: Request, res: Response) => {
 // Obtener todos los productos
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const products = await ProductCreateForm.findAll();
+    const products = await ProductCreateForm.findAll({
+      order: [["name", "ASC"]], // 👈 ordena por el campo 'name' en orden ascendente
+    });
     res.json({ data: products });
   } catch (error) {
     console.error(error);

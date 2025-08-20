@@ -10,8 +10,6 @@ export const getAllItems = async (req: Request, res: Response) => {
       order: [["created_at", "DESC"]],
     });
 
-    console.log("items result:", JSON.stringify(items, null, 2)); // log temporal
-
     res.json(items);
   } catch (error: any) {
     console.error("Error en getAllItems:", error);
