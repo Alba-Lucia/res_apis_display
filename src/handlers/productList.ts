@@ -42,34 +42,6 @@ export const addItem = async (req: Request, res: Response) => {
   }
 };
 
-// export const updateItem = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   try {
-//     const id = req.params.id;
-//     const { quantity } = req.body;
-
-//     const item = await ProductList.findByPk(id);
-
-//     if (!item) {
-//       res.status(404).json({ error: "Item not found" });
-//       return;
-//     }
-
-//     await item.update(req.body);
-//     // item.quantity = quantity;
-//     await item.save();
-
-//     res.json(item);
-//     return;
-//   } catch (error) {
-//     res.status(500).json({ error: "Error updating item" });
-//     return;
-//   }
-// };
-// Actualizar producto
-
 export const updateItem = async (
   req: Request,
   res: Response

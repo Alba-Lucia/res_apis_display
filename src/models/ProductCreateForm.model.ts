@@ -10,6 +10,13 @@ class ProductCreateForm extends Model<ProductCreateForm> {
     allowNull: false, // ← Solo este es obligatorio
   })
   name!: string;
+  
+   @Column({
+    type: DataType.STRING,
+    allowNull: true, // ← Solo este es obligatorio
+  })
+  sku?: string;
+
   @Column({
     type: DataType.INTEGER,
     allowNull: true, // ← Ahora opcional

@@ -6,8 +6,10 @@ import productRouter from "./router/router";
 import showcaseRouter from "./router/router";
 import productListRoutes from "./router/productList";
 
+
 import db from "./config/db";
 import morgan from "morgan";
+import stockOrderRouter from "./router/stockOrderRouter";
 
 //Conectar a la abse de datos
 async function conectDB() {
@@ -46,5 +48,6 @@ server.use("/api/auth", authRouter); // Para login y registro
 server.use("/api/products", productRouter); // Para productos del inventario
 server.use("/api/product-list", productListRoutes);
 server.use("/api/showcase", showcaseRouter); // Para productos en la vitrina
+server.use("/api/stockOrder", stockOrderRouter);
 
 export default server;
