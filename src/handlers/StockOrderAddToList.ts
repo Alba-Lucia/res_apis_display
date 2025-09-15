@@ -86,6 +86,44 @@ export async function getProductListHandler(req: Request, res: Response) {
   }
 }
 
+// Editar producto
+export const updateStockOrderAddToList = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const stockOrderAddToList = await StockOrderAddToList.findByPk(id);
+    if (!stockOrderAddToList) {
+      res.status(404).json({ error: "Producto no encontrado" });
+      return;
+    }
+    await stockOrderAddToList.update(req.body);
+    res.json({ data: stockOrderAddToList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar producto" });
+  }
+};
+
+// Eliminar producto
+export const deleteStockOrderAddToList = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const product = await StockOrderAddToList.findByPk(id);
+
+    if (!product) {
+      res.status(404).json({ error: "Producto No Encontrado" });
+      return;
+    }
+    await product.destroy();
+    res.json({ data: "Producto eliminado" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
 export async function clearTodayListHandler(req: Request, res: Response) {
   try {
     const today = new Date().toISOString().split("T")[0];
@@ -104,3 +142,4 @@ export async function clearTodayListHandler(req: Request, res: Response) {
     res.status(500).json({ error: "No se pudo vaciar la lista" });
   }
 }
+
